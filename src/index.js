@@ -1,3 +1,4 @@
+/*eslint-disable import/default */
 import 'babel-polyfill'; //in real app case , use only the polyfill that you need, babel-polyfill transpile some special syntax such as routes
 import React from 'react';
 import { render } from 'react-dom'; //in react.14 react-DOM was split off from React, we need here to use render function

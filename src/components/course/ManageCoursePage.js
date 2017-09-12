@@ -4,8 +4,9 @@ import {bindActionCreators} from 'redux';
 import * as courseActions from '../../actions/courseActions';
 import CourseForm from './CourseForm';
 import toastr from 'toastr';
+import {authorsFormattedForDropDown} from '../../selectors/selectors';
 
-class ManageCoursePage extends React.Component {
+export class ManageCoursePage extends React.Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
@@ -33,8 +34,26 @@ class ManageCoursePage extends React.Component {
     return this.setState({course: course});
   }
 
+  courseFormIsValid() {
+    let formIsValid = true;
+    let errors = {};
+
+    if (this.state.course.title.length < 5) {
+      errors.title = 'Title must be at least 5 characters.';
+      formIsValid = false;
+    }
+
+    this.setState({errors: errors});
+    return formIsValid;
+  }
+
   saveCourse(event) {
     event.preventDefault();
+
+    if (!this.courseFormIsValid()) {
+      return;
+    }
+
     this.setState({saving: true});
     this.props.actions.saveCourse(this.state.course)
       .then(() => this.redirectToCoursesPage())
@@ -93,16 +112,21 @@ function mapStateToProps(state, ownProps) {
     course = getCourseById(state.courses, courseId);
   }
 
-  const authorsFormatted = state.authors.map(author => {
-    return {
-      value: author.id,
-      text: author.firstName + ' ' + author.lastName
-    };
-  });
+  // We need to test mapStateToProps :
+  // So first we'll extract every piece of logic in a separate function to test it in an isolate mode
+  // we dont aim here to test reducers. passing of state and ownProps from reducers.
+
+
+  // const authorsFormatted = state.authors.map(author => {
+  //   return {
+  //     value: author.id,
+  //     text: author.firstName + ' ' + author.lastName
+  //   };
+  // });
 
   return {
     course,
-    authors: authorsFormatted
+    authors: authorsFormattedForDropDown(state.authors)
   };
 }
 
